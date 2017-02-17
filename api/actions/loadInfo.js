@@ -1,3 +1,5 @@
+// This loads initial data to client
+
 export default function loadInfo() {
   return new Promise((resolve) => {
     resolve({

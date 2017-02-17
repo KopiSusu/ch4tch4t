@@ -1,3 +1,5 @@
+// This maps external urls to our reducer/action combo
+
 export function mapUrl(availableActions = {}, url = []) {
   const notFound = {action: null, params: []};
 

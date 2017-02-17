@@ -20,5 +20,16 @@ $brand-info: #5bc0de;
 
 $text-color: #333;
 
+
+// Font Details
 $font-size-base: 14px;
 $font-family-sans-serif: "Helvetica Neue", Helvetica, sans-serif;
+
+
+// grid variables
+$grid-columns: 12;
+$grid-max-width: 65em;
+
+// breakpoints
+$breakpoint-small: "only screen and (min-width: 20em)";
+$breakpoint-medium: "only screen and (min-width: 30em)";

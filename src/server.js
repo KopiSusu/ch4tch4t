@@ -19,12 +19,18 @@ import createHistory from 'react-router/lib/createMemoryHistory';
 import {Provider} from 'react-redux';
 import getRoutes from './routes';
 
-const targetUrl = 'http://' + config.apiHost + ':' + config.apiPort;
+const apiUrl = 'http://' + config.apiHost + ':' + config.apiPort;
+const gatewayUrl = 'http://' + config.apiHost + ':' + config.apiPort;
 const pretty = new PrettyError();
 const app = new Express();
 const server = new http.Server(app);
-const proxy = httpProxy.createProxyServer({
-  target: targetUrl,
+const apiProxy = httpProxy.createProxyServer({
+  target: apiUrl,
+  ws: true
+});
+
+const gatewayProxy = httpProxy.createProxyServer({
+  target: gatewayUrl,
   ws: true
 });
 
@@ -35,19 +41,36 @@ app.use(Express.static(path.join(__dirname, '..', 'static')));
 
 // Proxy to API server
 app.use('/api', (req, res) => {
-  proxy.web(req, res, {target: targetUrl});
+  apiProxy.web(req, res, {target: apiUrl});
 });
 
 app.use('/ws', (req, res) => {
-  proxy.web(req, res, {target: targetUrl + '/ws'});
+  apiProxy.web(req, res, {target: apiUrl + '/ws'});
 });
 
 server.on('upgrade', (req, socket, head) => {
-  proxy.ws(req, socket, head);
+  apiProxy.ws(req, socket, head);
+});
+
+// Proxy to GATEWAY server
+app.use('/gateway/facebook', (req, res) => {
+  gatewayProxy.web(req, res, {target: gatewayUrl});
+});
+
+app.use('/gateway/line', (req, res) => {
+  gatewayProxy.web(req, res, {target: gatewayUrl});
+});
+
+app.use('/ws', (req, res) => {
+  gatewayProxy.web(req, res, {target: gatewayUrl + '/ws'});
+});
+
+server.on('upgrade', (req, socket, head) => {
+  gatewayProxy.ws(req, socket, head);
 });
 
 // added the error handling to avoid https://github.com/nodejitsu/node-http-proxy/issues/527
-proxy.on('error', (error, req, res) => {
+apiProxy.on('error', (error, req, res) => {
   let json;
   if (error.code !== 'ECONNRESET') {
     console.error('proxy error', error);

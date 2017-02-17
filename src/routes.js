@@ -2,17 +2,14 @@ import React from 'react';
 import {IndexRoute, Route} from 'react-router';
 import { isLoaded as isAuthLoaded, load as loadAuth } from 'redux/modules/auth';
 import {
-    App,
     Chat,
-    Home,
-    Widgets,
-    About,
     Login,
     LoginSuccess,
-    Survey,
     NotFound,
-    Pagination,
   } from 'containers';
+import {
+    App,
+  } from 'layouts';
 
 export default (store) => {
   const requireLogin = (nextState, replace, cb) => {
@@ -38,7 +35,7 @@ export default (store) => {
   return (
     <Route path="/" component={App}>
       { /* Home (main) route */ }
-      <IndexRoute component={Home}/>
+      <IndexRoute component={Login}/>
 
       { /* Routes requiring login */ }
       <Route onEnter={requireLogin}>
@@ -47,11 +44,7 @@ export default (store) => {
       </Route>
 
       { /* Routes */ }
-      <Route path="about" component={About}/>
       <Route path="login" component={Login}/>
-      <Route path="pagination" component={Pagination}/>
-      <Route path="survey" component={Survey}/>
-      <Route path="widgets" component={Widgets}/>
 
       { /* Catch all route */ }
       <Route path="*" component={NotFound} status={404} />
